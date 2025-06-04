@@ -1,5 +1,5 @@
 # Dynamic Desktop
-Set your wallpapers to videos or html files, like Windows Dreamscene/Active Desktop.
+Set your wallpaper to a video or html file, like Windows Dreamscene/Active Desktop.
 ## Supported Files
 ✔ Pictures (For some reason)  
 ✔ Videos  
