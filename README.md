@@ -11,9 +11,11 @@ Windows Vista SP2 or newer
 Windows Aero enabled  
 Windows Media Player (Should come with Windows)
 ## Supported Versions of Windows
-✔ Windows 11  
-✔ Windows 10  
-✔* Windows 8.x (Untested, but I assume it works)  
+✔ Windows 11 / Server 2025  
+✔ Windows 10 / Server (2016/2019/2022)  
+✔* Windows 8.x / Server 2012 (Untested, but I assume it works)  
 ✔* Windows 7 (With SP1) (Untested, but I assume it works)  
+✔* Windows Server 2008 R2 (With SP1) (Windows Aero may have to be installed if not already) (Untested, but I assume it works)  
 ✔* Windows Vista (With SP2) (Untested, but I assume it works)  
+✔* Windows Server 2008 (With SP2) (Windows Aero may have to be installed if not already) (Untested, but I assume it works)  
 ❌ Windows XP and before
