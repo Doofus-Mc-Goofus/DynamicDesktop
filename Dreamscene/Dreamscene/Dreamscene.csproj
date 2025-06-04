@@ -114,12 +114,4 @@
     <Resource Include="ico.ico" />
   </ItemGroup>
   <Import Project="$(MSBuildToolsPath)\Microsoft.CSharp.targets" />
-  <Target Name="EnsureNuGetPackageBuildImports" BeforeTargets="PrepareForBuild">
-    <PropertyGroup>
-      <ErrorText>This project references NuGet package(s) that are missing on this computer. Use NuGet Package Restore to download them.  For more information, see http://go.microsoft.com/fwlink/?LinkID=322105. The missing file is {0}.</ErrorText>
-    </PropertyGroup>
-    <Error Condition="!Exists('..\packages\Avalonia.11.3.0\build\Avalonia.targets')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Avalonia.11.3.0\build\Avalonia.targets'))" />
-    <Error Condition="!Exists('..\packages\Avalonia.11.3.0\build\Avalonia.props')" Text="$([System.String]::Format('$(ErrorText)', '..\packages\Avalonia.11.3.0\build\Avalonia.props'))" />
-  </Target>
-  <Import Project="..\packages\Avalonia.11.3.0\build\Avalonia.targets" Condition="Exists('..\packages\Avalonia.11.3.0\build\Avalonia.targets')" />
 </Project>
