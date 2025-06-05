@@ -27,12 +27,12 @@ namespace Dreamscene
         {
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
             InitializeComponent();
+            HKCU_AddKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", "DynamicDesktop.exe", 11000);
             if (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp") == "")
             {
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Wallp", "BM");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
-                HKCU_AddKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", "dreamscene.exe", 11000);
             }
             SystemEvents.UserPreferenceChanged += (s, ee) => Update(true);
             timer.Tick += (s, ee) => Update(false);
@@ -81,28 +81,25 @@ namespace Dreamscene
             System.Drawing.Color bg = System.Drawing.SystemColors.Desktop;
             Background = new SolidColorBrush(Color.FromArgb(bg.A, bg.R, bg.G, bg.B));
             string pst;
-            // detecting if hTtp, hTtps, or fTp. Other protocols may not work
-            if (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")[1].ToString() == "t")
+            if (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")[1].ToString() == "M")
             {
-                // Removes any human errors
-                pst = new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")).ToString();
+                pst = null;
             }
             else
             {
-                pst = @"file:///" + HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp").Replace(@"\", @"/");
+                pst = new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")).ToString();
             }
             if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "ActiveDesktop")))
             {
-                ActiveDesktop.Source = null;
                 Video.Visibility = Visibility.Hidden;
                 ActiveDesktop.Visibility = Visibility.Visible;
                 try
                 {
-                    if (pst != ActiveDesktop.Source.ToString())
+                    if (new Uri(pst) != ActiveDesktop.Source)
                     {
                         try
                         {
-                            ActiveDesktop.Source = new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"));
+                            ActiveDesktop.Source = new Uri(pst);
                         }
                         catch
                         {
@@ -117,7 +114,7 @@ namespace Dreamscene
                     {
                         try
                         {
-                            ActiveDesktop.Source = new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"));
+                            ActiveDesktop.Source = new Uri(pst);
                         }
                         catch
                         {
@@ -207,9 +204,9 @@ namespace Dreamscene
                         Video.Height = double.NaN;
                         Video.VerticalAlignment = VerticalAlignment.Stretch;
                     }
-                    UpdatePreview();
                 }
             }
+            UpdatePreview();
 
             if (isUpdated)
             {
