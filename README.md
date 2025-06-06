@@ -11,7 +11,7 @@ Windows Vista SP2 or newer
 Windows Aero enabled  
 Windows Media Player (Should come with Windows)
 ## Supported Versions of Windows
-✔ Windows 11 / Server 2025  
+❌ Windows 11 / Server 2025 (Only tested on 24H2. May work with versions before that.)  
 ✔ Windows 10 / Server (2016/2019/2022)  
 ✔* Windows 8.x / Server 2012
 ✔* Windows 7 (With SP1)
