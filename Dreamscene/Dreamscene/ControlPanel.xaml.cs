@@ -28,7 +28,7 @@ namespace Dreamscene
                     FitDropdown.SelectedIndex = 3;
                     break;
             }
-            if (mainWindow.HKCU_GetString(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Dynamic Desktop") != "")
+            if (mainWindow.HKCU_GetString(@"SOFTWARE\Dreamscene", "Startup") == "true")
             {
                 StartupCheckbox.IsChecked = true;
             }
@@ -38,7 +38,18 @@ namespace Dreamscene
         public void Update(BitmapImage image)
         {
             preview.Source = image;
-            URL.Content = MainWiw.HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp");
+            switch (MainWiw.HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"))
+            {
+                case "BM":
+                    URL.Content = "None";
+                    break;
+                case "aur":
+                    URL.Content = "Desktop Aurora by SaT";
+                    break;
+                default:
+                    URL.Content = MainWiw.HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp");
+                    break;
+            }
         }
 
         private void Button_Click(object sender, RoutedEventArgs e)

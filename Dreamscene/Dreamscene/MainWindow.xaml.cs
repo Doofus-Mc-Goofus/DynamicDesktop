@@ -26,7 +26,21 @@ namespace Dreamscene
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
             e.Handled = true;
-            _ = MessageBox.Show(e.Exception.Message);
+            try
+            {
+                _ = MessageBox.Show(e.Exception.Message + "\n" + e.Exception.InnerException);
+            }
+            catch
+            {
+                try
+                {
+                    _ = MessageBox.Show(e.Exception.Message);
+                }
+                catch
+                {
+                    _ = MessageBox.Show("Unknown error occurred.");
+                }
+            }
             Application.Current.Shutdown();
         }
         public MainWindow()
@@ -39,6 +53,7 @@ namespace Dreamscene
             {
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Wallp", "BM");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
+                HKCU_AddKey(@"SOFTWARE\Dreamscene", "Startup", "true");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
                 HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Dynamic Desktop", swaus);
             }
