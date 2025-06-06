@@ -1,7 +1,9 @@
 ﻿using System;
+using System.Diagnostics;
 using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
+using System.Threading.Tasks;
 using System.Windows;
 using System.Windows.Interop;
 using System.Windows.Media;
@@ -16,6 +18,7 @@ namespace Dreamscene
         private readonly DispatcherTimer timer = new DispatcherTimer();
         private bool showwindow = true;
         private ControlPanel publicpanel;
+        private readonly Process process = new Process();
         private readonly System.Windows.Forms.NotifyIcon notifyIcon1 = new System.Windows.Forms.NotifyIcon();
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
@@ -23,6 +26,7 @@ namespace Dreamscene
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
             e.Handled = true;
+            _ = MessageBox.Show(e.Exception.Message);
             Application.Current.Shutdown();
         }
         public MainWindow()
@@ -30,35 +34,47 @@ namespace Dreamscene
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
             InitializeComponent();
             HKCU_AddKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", "DynamicDesktop.exe", 11000);
+            string swaus = "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" -hide 1";
             if (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp") == "")
             {
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Wallp", "BM");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
+                HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Dynamic Desktop", swaus);
             }
             notifyIcon1.Icon = new Icon(Application.GetResourceStream(new Uri("pack://application:,,,/ico.ico")).Stream);
             notifyIcon1.Text = "Dynamic Desktop";
             notifyIcon1.Visible = true;
             notifyIcon1.MouseClick += CreateSetupWindowFunc;
             notifyIcon1.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
-            _ = notifyIcon1.ContextMenuStrip.Items.Add("Open Settings", null, (s, ee) => CreateSetupWindow());
-            _ = notifyIcon1.ContextMenuStrip.Items.Add("Close Dynamic Desktop", null, (s, ee) => Application.Current.Shutdown());
+            _ = notifyIcon1.ContextMenuStrip.Items.Add("Open Settings", null, (s, ee) => CreateSetupWindow(false));
+            _ = notifyIcon1.ContextMenuStrip.Items.Add("Adjust Volume", null, SndVol);
+            _ = notifyIcon1.ContextMenuStrip.Items.Add("Exit Dynamic Desktop", null, (s, ee) => Application.Current.Shutdown());
             SystemEvents.UserPreferenceChanged += (s, ee) => Update(true);
             timer.Tick += (s, ee) => Update(false);
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Start();
         }
 
+        private async void SndVol(object sender, EventArgs e)
+        {
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = @"sndvol"
+            };
+            _ = await Task.Run(process.Start);
+        }
+
         private void CreateSetupWindowFunc(object sender, System.Windows.Forms.MouseEventArgs e)
         {
             if (e.Button == System.Windows.Forms.MouseButtons.Left)
             {
-                CreateSetupWindow();
+                CreateSetupWindow(true);
             }
 
         }
 
-        private void CreateSetupWindow()
+        private void CreateSetupWindow(bool FUCK)
         {
             foreach (Window window in Application.Current.Windows)
             {
@@ -320,7 +336,17 @@ namespace Dreamscene
             }
             if (showwindow)
             {
-                CreateSetupWindow();
+                CreateSetupWindow(true);
+            }
+            else
+            {
+                ControlPanel settingsWindow = new ControlPanel(this)
+                {
+                    Visibility = Visibility.Hidden
+                };
+                settingsWindow.Show();
+                publicpanel = settingsWindow;
+                settingsWindow.Close();
             }
             Update(false);
         }

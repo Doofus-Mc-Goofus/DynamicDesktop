@@ -8,7 +8,7 @@ namespace Dreamscene
     public partial class ControlPanel : Window
     {
         private readonly MainWindow MainWiw;
-        private bool firstTime = true;
+        private readonly bool firstTime = true;
         public ControlPanel(MainWindow mainWindow)
         {
             InitializeComponent();
@@ -27,6 +27,10 @@ namespace Dreamscene
                 default:
                     FitDropdown.SelectedIndex = 3;
                     break;
+            }
+            if (mainWindow.HKCU_GetString(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Dynamic Desktop") != "")
+            {
+                StartupCheckbox.IsChecked = true;
             }
             firstTime = false;
         }
@@ -96,6 +100,25 @@ namespace Dreamscene
             if (!firstTime)
             {
                 MainWiw.Update(false);
+            }
+        }
+
+        private void StartupCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            if (!firstTime)
+            {
+                MainWiw.HKCU_AddKey(@"SOFTWARE\Dreamscene", "Startup", "true");
+                MainWiw.HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Dynamic Desktop", "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" -hide 1");
+            }
+        }
+
+        private void StartupCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            if (!firstTime)
+            {
+                MainWiw.HKCU_AddKey(@"SOFTWARE\Dreamscene", "Startup", "false");
+                RegistryKey rk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
+                rk.DeleteValue("Dynamic Desktop");
             }
         }
     }
