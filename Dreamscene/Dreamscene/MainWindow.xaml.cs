@@ -10,6 +10,7 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Win32;
+using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Dreamscene
 {
@@ -132,8 +133,9 @@ namespace Dreamscene
                 bitmapImage.EndInit();
             }
             publicpanel.Update(bitmapImage);
-        }
+            preview.Source = bitmapImage;
 
+        }
         public void Update(bool isUpdated)
         {
             Aurora.Visibility = Visibility.Collapsed;
@@ -374,7 +376,7 @@ namespace Dreamscene
         private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
             Video.Stop();
-            Video.Position = new TimeSpan(0);
+            Video.Position = new TimeSpan(0, 0, 0, 0, 1);
             Video.Play();
         }
         public string HKCU_GetString(string path, string key)
