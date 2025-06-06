@@ -3,9 +3,8 @@
         xmlns:x="http://schemas.microsoft.com/winfx/2006/xaml"
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
-        xmlns:local="clr-namespace:Dreamscene"
         mc:Ignorable="d"
-        Title="Dreamscene Settings" Height="360" Width="640">
+        Title="Dynamic Desktop Settings" Height="400" Width="640" ResizeMode="NoResize">
     <Grid x:Name="Grirg">
         <Label Content="Preview:" Margin="5,0,0,0"/>
         <Rectangle Width="400" Height="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Fill="Black"/>
@@ -13,5 +12,11 @@
         <Image x:Name="preview" Width="400" Height="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0"/>
         <Label x:Name="URL" Content="C:\" Margin="5,272,0,0"/>
         <Button HorizontalAlignment="Right" VerticalAlignment="Top" Content="Browse" Padding="5,0,6,1" Margin="30,275,10,0" Click="Button_Click"/>
+        <ComboBox x:Name="FitDropdown" HorizontalAlignment="Left" Margin="10,300,0,0" VerticalAlignment="Top" Width="130" SelectionChanged="FitDropdown_SelectionChanged">
+            <ComboBoxItem Content="Fill"/>
+            <ComboBoxItem Content="Fit"/>
+            <ComboBoxItem Content="Stretch"/>
+            <ComboBoxItem Content="Center"/>
+        </ComboBox>
     </Grid>
 </Window>

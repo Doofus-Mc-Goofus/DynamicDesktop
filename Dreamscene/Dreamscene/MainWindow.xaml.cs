@@ -1,4 +1,5 @@
 ﻿using System;
+using System.Drawing;
 using System.IO;
 using System.Runtime.InteropServices;
 using System.Windows;
@@ -15,6 +16,7 @@ namespace Dreamscene
         private readonly DispatcherTimer timer = new DispatcherTimer();
         private bool showwindow = true;
         private ControlPanel publicpanel;
+        private readonly System.Windows.Forms.NotifyIcon notifyIcon1 = new System.Windows.Forms.NotifyIcon();
         private void OnDispatcherUnhandledException(object sender, DispatcherUnhandledExceptionEventArgs e)
         {
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "Wallp", "BM");
@@ -34,13 +36,39 @@ namespace Dreamscene
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
             }
+            notifyIcon1.Icon = new Icon(Application.GetResourceStream(new Uri("pack://application:,,,/ico.ico")).Stream);
+            notifyIcon1.Text = "Dynamic Desktop";
+            notifyIcon1.Visible = true;
+            notifyIcon1.MouseClick += CreateSetupWindowFunc;
+            notifyIcon1.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
+            _ = notifyIcon1.ContextMenuStrip.Items.Add("Open Settings", null, (s, ee) => CreateSetupWindow());
+            _ = notifyIcon1.ContextMenuStrip.Items.Add("Close Dynamic Desktop", null, (s, ee) => Application.Current.Shutdown());
             SystemEvents.UserPreferenceChanged += (s, ee) => Update(true);
             timer.Tick += (s, ee) => Update(false);
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Start();
         }
+
+        private void CreateSetupWindowFunc(object sender, System.Windows.Forms.MouseEventArgs e)
+        {
+            if (e.Button == System.Windows.Forms.MouseButtons.Left)
+            {
+                CreateSetupWindow();
+            }
+
+        }
+
         private void CreateSetupWindow()
         {
+            foreach (Window window in Application.Current.Windows)
+            {
+                if (window.GetType() == typeof(ControlPanel))
+                {
+                    _ = window.Activate();
+                    _ = window.Focus();
+                    return;
+                }
+            }
             ControlPanel settingsWindow = new ControlPanel(this);
             settingsWindow.Show();
             publicpanel = settingsWindow;
@@ -75,20 +103,14 @@ namespace Dreamscene
             publicpanel.Update(bitmapImage);
         }
 
-        private void Update(bool isUpdated)
+        public void Update(bool isUpdated)
         {
             Aurora.Visibility = Visibility.Collapsed;
             System.Drawing.Color bg = System.Drawing.SystemColors.Desktop;
-            Background = new SolidColorBrush(Color.FromArgb(bg.A, bg.R, bg.G, bg.B));
-            string pst;
-            if (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")[1].ToString() == "M")
-            {
-                pst = null;
-            }
-            else
-            {
-                pst = new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")).ToString();
-            }
+            Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(bg.A, bg.R, bg.G, bg.B));
+            string pst = HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")[1].ToString() == "M"
+                ? null
+                : new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")).ToString();
             if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "ActiveDesktop")))
             {
                 Video.Visibility = Visibility.Hidden;
@@ -122,6 +144,31 @@ namespace Dreamscene
                         }
                     }
                 }
+                // if (ActiveDesktop.Source == null)
+                // {
+                //     if (!File.Exists(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")))
+                // {
+                // switch (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"))
+                // {
+                //             case "BM":
+                // NonFatalError.Content = "Select a file";
+                // ActiveDesktop.Visibility = Visibility.Hidden;
+                // break;
+                // default:
+                // NonFatalError.Content = "Unable to locate HTML file, please locate it and try again.";
+                // HKCU_AddKey(@"SOFTWARE\Dreamscene", "Wallp", "BM");
+                //  break;
+                // }
+                // }
+                // else
+                //     {
+                //    NonFatalError.Content = "Unable to navigate to HTML file.";
+                //    }
+                //          }
+                // else
+                //         {
+                //          NonFatalError.Content = "";
+                //       }
             }
             else
             {
@@ -327,6 +374,11 @@ namespace Dreamscene
         private void Video_MediaOpened(object sender, RoutedEventArgs e)
         {
             NonFatalError.Content = "";
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            notifyIcon1.Dispose();
         }
     }
 }
