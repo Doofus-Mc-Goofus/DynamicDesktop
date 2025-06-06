@@ -4,7 +4,7 @@ Set your wallpaper to a video or html file, kinda like Windows Dreamscene and Ac
 ✔ Pictures (For some reason)  
 ✔ Videos  
 ✔* HTML (Implementation is barebones. Really only meant for basic html and css.)  
-🟡 Gifs (Don't loop properly)  
+✔ Gifs
 ## Requirements
 Windows 7 SP1 or newer  
 .NET 4.7.2 or newer (Should come with Windows 10)  
