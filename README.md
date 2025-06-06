@@ -13,7 +13,7 @@ Windows Media Player (Should come with Windows)
 ## Supported Versions of Windows
 🟡 Windows 11 / Server 2025 (Only tested on busted up 24H2. May work with versions before that.)  
 ✔ Windows 10 / Server (2016/2019/2022)  
-✔* Windows 8.x / Server 2012  
-✔* Windows 7 (With SP1)  
-✔* Windows Server 2008 R2 (With SP1) (Windows Aero may have to be installed if not already) (Untested, but I assume it works)  
+✔ Windows 8.x / Server 2012  
+✔ Windows 7 (With SP1)  
+✔ Windows Server 2008 R2 (With SP1) (Windows Aero may have to be installed if not already) (Untested, but I assume it works)  
 ❌ Windows Vista / Windows Server 2008 and before  
