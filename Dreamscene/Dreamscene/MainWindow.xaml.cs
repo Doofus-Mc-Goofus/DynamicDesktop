@@ -124,7 +124,7 @@ namespace Dreamscene
             Aurora.Visibility = Visibility.Collapsed;
             System.Drawing.Color bg = System.Drawing.SystemColors.Desktop;
             Background = new SolidColorBrush(System.Windows.Media.Color.FromArgb(bg.A, bg.R, bg.G, bg.B));
-            string pst = HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")[1].ToString() == "M"
+            string pst = HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")[1].ToString() == "M" || HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp") == "aur"
                 ? null
                 : new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")).ToString();
             if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "ActiveDesktop")))
@@ -267,17 +267,22 @@ namespace Dreamscene
                         Video.Height = double.NaN;
                         Video.VerticalAlignment = VerticalAlignment.Stretch;
                     }
+                    if (Video.Source == null)
+                    {
+                        MediaFail();
+                    }
                 }
             }
             UpdatePreview();
 
             if (isUpdated)
             {
-                _ = DwmIsCompositionEnabled(out bool aeroEnabled);
-                if (!aeroEnabled)
+                if (Height != SystemParameters.PrimaryScreenHeight || Width != SystemParameters.PrimaryScreenWidth)
                 {
-                    _ = MessageBox.Show("Dreamscene needs the Aero theme to be applied in order to run. Please enable the Aero theme and restart the program.", "Compositing Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    Close();
+                    publicpanel.Close();
+                    Visibility = Visibility.Hidden;
+                    _ = MessageBox.Show("Dynamic Desktop could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or Windows 11 being installed. Dynamic Desktop will now close.", "Hook Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    Application.Current.Shutdown();
                 }
             }
         }
@@ -348,7 +353,7 @@ namespace Dreamscene
                 publicpanel = settingsWindow;
                 settingsWindow.Close();
             }
-            Update(false);
+            Update(true);
         }
 
         private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
@@ -375,6 +380,10 @@ namespace Dreamscene
 
         private void Video_MediaFailed(object sender, ExceptionRoutedEventArgs e)
         {
+            MediaFail();
+        }
+        private void MediaFail()
+        {
             if (!File.Exists(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")))
             {
                 switch (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"))
@@ -394,9 +403,7 @@ namespace Dreamscene
             {
                 NonFatalError.Content = "Unable to play video file.";
             }
-
         }
-
         private void Video_MediaOpened(object sender, RoutedEventArgs e)
         {
             NonFatalError.Content = "";
