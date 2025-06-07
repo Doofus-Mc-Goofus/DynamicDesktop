@@ -10,7 +10,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Win32;
-using static System.Windows.Forms.VisualStyles.VisualStyleElement.StartPanel;
 
 namespace Dreamscene
 {
@@ -79,6 +78,8 @@ namespace Dreamscene
                 FileName = @"sndvol"
             };
             _ = await Task.Run(process.Start);
+            await Task.Run(process.WaitForExit);
+            await Task.Run(process.Close);
         }
 
         private void CreateSetupWindowFunc(object sender, System.Windows.Forms.MouseEventArgs e)
@@ -133,8 +134,6 @@ namespace Dreamscene
                 bitmapImage.EndInit();
             }
             publicpanel.Update(bitmapImage);
-            preview.Source = bitmapImage;
-
         }
         public void Update(bool isUpdated)
         {
@@ -177,31 +176,6 @@ namespace Dreamscene
                         }
                     }
                 }
-                // if (ActiveDesktop.Source == null)
-                // {
-                //     if (!File.Exists(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")))
-                // {
-                // switch (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"))
-                // {
-                //             case "BM":
-                // NonFatalError.Content = "Select a file";
-                // ActiveDesktop.Visibility = Visibility.Hidden;
-                // break;
-                // default:
-                // NonFatalError.Content = "Unable to locate HTML file, please locate it and try again.";
-                // HKCU_AddKey(@"SOFTWARE\Dreamscene", "Wallp", "BM");
-                //  break;
-                // }
-                // }
-                // else
-                //     {
-                //    NonFatalError.Content = "Unable to navigate to HTML file.";
-                //    }
-                //          }
-                // else
-                //         {
-                //          NonFatalError.Content = "";
-                //       }
             }
             else
             {
@@ -302,6 +276,18 @@ namespace Dreamscene
                     Application.Current.Shutdown();
                 }
             }
+            try
+            {
+                if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "ActiveDesktop")))
+                {
+                    Video.Close();
+                }
+            }
+            catch
+            {
+
+            }
+            GC.Collect();
         }
 
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
@@ -320,9 +306,6 @@ namespace Dreamscene
         private static extern bool ShowWindow(IntPtr hWnd, int nCmdShow);
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr SetParent(IntPtr hWndChild, IntPtr hWndNewParent);
-        [DllImport("dwmapi.dll")]
-        public static extern IntPtr DwmIsCompositionEnabled(out bool pfEnabled);
-
         private void Grid_Loaded(object sender, RoutedEventArgs e)
         {
             IntPtr intPtr = FindWindow("Progman", null);
@@ -375,9 +358,7 @@ namespace Dreamscene
 
         private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
         {
-            Video.Stop();
             Video.Position = new TimeSpan(0, 0, 0, 0, 1);
-            Video.Play();
         }
         public string HKCU_GetString(string path, string key)
         {

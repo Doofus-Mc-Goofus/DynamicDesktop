@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Dynamic Desktop Settings" Height="400" Width="640" ResizeMode="NoResize">
+        Title="Dynamic Desktop Settings" Height="400" Width="640" ResizeMode="NoResize" Closing="Window_Closing">
     <Grid x:Name="Grirg">
         <Label Content="Preview:" Margin="5,0,0,0"/>
         <Rectangle Width="400" Height="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Fill="Black"/>

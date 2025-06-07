@@ -89,6 +89,7 @@ namespace Dreamscene
             {
                 _ = MessageBox.Show("Couldn't apply file", "Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
             }
+            GC.Collect();
         }
 
         private void FitDropdown_SelectionChanged(object sender, System.Windows.Controls.SelectionChangedEventArgs e)
@@ -131,6 +132,11 @@ namespace Dreamscene
                 RegistryKey rk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
                 rk.DeleteValue("Dynamic Desktop");
             }
+        }
+
+        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        {
+            GC.Collect();
         }
     }
 }

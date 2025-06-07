@@ -1371,7 +1371,6 @@
                 </Canvas>
             </Canvas>
         </Viewbox>
-        <Image x:Name="preview"></Image>
         <MediaElement x:Name="Video" MediaEnded="MediaElement_MediaEnded" Stretch="Fill" MediaFailed="Video_MediaFailed" MediaOpened="Video_MediaOpened" ScrubbingEnabled="True" UnloadedBehavior="Manual" LoadedBehavior="Play"/>
         <Label x:Name="NonFatalError" Foreground="White" Content="" Panel.ZIndex="9999" HorizontalAlignment="Center" VerticalAlignment="Center"/>
         <WebBrowser x:Name="ActiveDesktop" Panel.ZIndex="999" Visibility="Hidden"/>
