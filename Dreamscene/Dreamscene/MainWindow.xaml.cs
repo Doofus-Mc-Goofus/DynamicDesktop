@@ -102,9 +102,8 @@ namespace Dreamscene
                     return;
                 }
             }
-            ControlPanel settingsWindow = new ControlPanel(this);
-            settingsWindow.Show();
-            publicpanel = settingsWindow;
+            publicpanel = new ControlPanel(this);
+            publicpanel.Show();
         }
 
         [Flags]
@@ -120,7 +119,7 @@ namespace Dreamscene
         {
             RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, 96, 96, PixelFormats.Pbgra32);
             renderTargetBitmap.Render(Video);
-            renderTargetBitmap.Render(ActiveDesktop);
+            renderTargetBitmap.Render(Aurora);
             BitmapImage bitmapImage = new BitmapImage();
             PngBitmapEncoder pngImage = new PngBitmapEncoder();
             pngImage.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
@@ -145,7 +144,7 @@ namespace Dreamscene
                 : new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp")).ToString();
             if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "ActiveDesktop")))
             {
-                Video.Visibility = Visibility.Hidden;
+                Video.Visibility = Visibility.Collapsed;
                 ActiveDesktop.Visibility = Visibility.Visible;
                 try
                 {
@@ -180,7 +179,7 @@ namespace Dreamscene
             else
             {
                 Video.Visibility = Visibility.Visible;
-                ActiveDesktop.Visibility = Visibility.Hidden;
+                ActiveDesktop.Visibility = Visibility.Collapsed;
                 try
                 {
                     if (pst != Video.Source.ToString())
@@ -271,8 +270,8 @@ namespace Dreamscene
                 if (Height != SystemParameters.PrimaryScreenHeight || Width != SystemParameters.PrimaryScreenWidth)
                 {
                     publicpanel.Close();
-                    Visibility = Visibility.Hidden;
-                    _ = MessageBox.Show("Dynamic Desktop could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or Windows 11 being installed. Dynamic Desktop will now close.", "Hook Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    Visibility = Visibility.Collapsed;
+                    _ = MessageBox.Show("Dynamic Desktop could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or Windows 11 being installed. Dynamic Desktop will now close.", "Hooking Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     Application.Current.Shutdown();
                 }
             }
@@ -280,7 +279,7 @@ namespace Dreamscene
             {
                 if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "ActiveDesktop")))
                 {
-                    Video.Close();
+                    Video.Source = null;
                 }
             }
             catch
@@ -291,14 +290,12 @@ namespace Dreamscene
         }
 
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
-
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
         [DllImport("user32.dll", CharSet = CharSet.Auto, SetLastError = true)]
         private static extern IntPtr SendMessageTimeout(IntPtr windowHandle, uint Msg, IntPtr wParam, IntPtr lParam, SendMessageTimeoutFlags flags, uint timeout, out IntPtr result);
         [DllImport("user32.dll", SetLastError = true)]
         public static extern IntPtr FindWindowEx(IntPtr parentHandle, IntPtr hWndChildAfter, string className, string windowTitle);
-
         [DllImport("user32.dll")]
         [return: MarshalAs(UnmanagedType.Bool)]
         private static extern bool EnumWindows(EnumWindowsProc lpEnumFunc, IntPtr lParam);
@@ -347,7 +344,7 @@ namespace Dreamscene
             {
                 ControlPanel settingsWindow = new ControlPanel(this)
                 {
-                    Visibility = Visibility.Hidden
+                    Visibility = Visibility.Collapsed
                 };
                 settingsWindow.Show();
                 publicpanel = settingsWindow;
@@ -390,7 +387,7 @@ namespace Dreamscene
                         NonFatalError.Content = "SaT";
                         break;
                     case "BM":
-                        NonFatalError.Content = "Select a file";
+                        NonFatalError.Content = "Welcome to Dynamic Desktop! Select a file to get started.";
                         break;
                     default:
                         NonFatalError.Content = "Unable to locate video file, please locate it and try again.";
@@ -404,7 +401,14 @@ namespace Dreamscene
         }
         private void Video_MediaOpened(object sender, RoutedEventArgs e)
         {
-            NonFatalError.Content = "";
+            try
+            {
+                NonFatalError.Content = !Video.HasVideo ? "This file has no video data." : "";
+            }
+            catch
+            {
+                NonFatalError.Content = "";
+            }
         }
 
         private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)

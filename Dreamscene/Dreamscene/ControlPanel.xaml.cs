@@ -1,5 +1,6 @@
 ﻿using System;
 using System.Windows;
+using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using Microsoft.Win32;
 
@@ -32,9 +33,17 @@ namespace Dreamscene
             {
                 StartupCheckbox.IsChecked = true;
             }
+            SystemEvents.UserPreferenceChanged += (s, ee) => MetricUpdate();
+            MetricUpdate();
             firstTime = false;
         }
-
+        private void MetricUpdate()
+        {
+            System.Drawing.Color bg = System.Drawing.SystemColors.Control;
+            System.Drawing.Color bg2 = System.Drawing.SystemColors.Desktop;
+            Background = new SolidColorBrush(Color.FromArgb(bg.A, bg.R, bg.G, bg.B));
+            DeskBG.Fill = new SolidColorBrush(Color.FromArgb(bg2.A, bg2.R, bg2.G, bg2.B));
+        }
         public void Update(BitmapImage image)
         {
             preview.Source = image;
@@ -134,9 +143,11 @@ namespace Dreamscene
             }
         }
 
-        private void Window_Closing(object sender, System.ComponentModel.CancelEventArgs e)
+        private void Window_Closed(object sender, EventArgs e)
         {
             GC.Collect();
+            preview.Source = null;
+            Grirg.Children.Clear();
         }
     }
 }
