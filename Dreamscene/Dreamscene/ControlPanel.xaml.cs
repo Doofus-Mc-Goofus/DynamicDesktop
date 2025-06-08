@@ -145,9 +145,11 @@ namespace Dreamscene
 
         private void Window_Closed(object sender, EventArgs e)
         {
+            bubton.Click -= Button_Click;
+            FitDropdown.SelectionChanged -= FitDropdown_SelectionChanged;
+            StartupCheckbox.Checked -= StartupCheckbox_Checked;
+            StartupCheckbox.Unchecked -= StartupCheckbox_Unchecked;
             GC.Collect();
-            preview.Source = null;
-            Grirg.Children.Clear();
         }
     }
 }

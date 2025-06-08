@@ -10,7 +10,6 @@ using System.Windows.Media;
 using System.Windows.Media.Imaging;
 using System.Windows.Threading;
 using Microsoft.Win32;
-
 namespace Dreamscene
 {
     public partial class MainWindow : Window
@@ -104,6 +103,7 @@ namespace Dreamscene
             }
             publicpanel = new ControlPanel(this);
             publicpanel.Show();
+            publicpanel.Closed += (s, ee) => publicpanel = null;
         }
 
         [Flags]
@@ -117,22 +117,29 @@ namespace Dreamscene
         }
         private void UpdatePreview()
         {
-            RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, 96, 96, PixelFormats.Pbgra32);
-            renderTargetBitmap.Render(Video);
-            renderTargetBitmap.Render(Aurora);
-            BitmapImage bitmapImage = new BitmapImage();
-            PngBitmapEncoder pngImage = new PngBitmapEncoder();
-            pngImage.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
-            using (MemoryStream stream = new MemoryStream())
+            if (publicpanel != null)
             {
-                pngImage.Save(stream);
-                _ = stream.Seek(0, SeekOrigin.Begin);
-                bitmapImage.BeginInit();
-                bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
-                bitmapImage.StreamSource = stream;
-                bitmapImage.EndInit();
+                RenderTargetBitmap renderTargetBitmap = new RenderTargetBitmap((int)SystemParameters.PrimaryScreenWidth, (int)SystemParameters.PrimaryScreenHeight, 96, 96, PixelFormats.Pbgra32);
+                renderTargetBitmap.Render(Video);
+                renderTargetBitmap.Render(Aurora);
+                renderTargetBitmap.Freeze();
+                BitmapImage bitmapImage = new BitmapImage();
+                PngBitmapEncoder pngImage = new PngBitmapEncoder();
+                pngImage.Frames.Add(BitmapFrame.Create(renderTargetBitmap));
+                using (MemoryStream stream = new MemoryStream())
+                {
+                    pngImage.Save(stream);
+                    _ = stream.Seek(0, SeekOrigin.Begin);
+                    bitmapImage.BeginInit();
+                    bitmapImage.CacheOption = BitmapCacheOption.OnLoad;
+                    bitmapImage.StreamSource = stream;
+                    bitmapImage.EndInit();
+                    RenderOptions.SetBitmapScalingMode(bitmapImage, BitmapScalingMode.NearestNeighbor);
+                    bitmapImage.Freeze();
+                }
+                publicpanel.Update(bitmapImage);
+                pngImage.Frames.Clear();
             }
-            publicpanel.Update(bitmapImage);
         }
         public void Update(bool isUpdated)
         {
@@ -264,15 +271,22 @@ namespace Dreamscene
                 }
             }
             UpdatePreview();
-
             if (isUpdated)
             {
                 if (Height != SystemParameters.PrimaryScreenHeight || Width != SystemParameters.PrimaryScreenWidth)
                 {
-                    publicpanel.Close();
+                    publicpanel?.Close();
                     Visibility = Visibility.Collapsed;
-                    _ = MessageBox.Show("Dynamic Desktop could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or Windows 11 being installed. Dynamic Desktop will now close.", "Hooking Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    _ = MessageBox.Show("Dynamic Desktop could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or your version of Windows is incompatible. Dynamic Desktop will now close.", "Hooking Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     Application.Current.Shutdown();
+                }
+                if ((RenderCapability.Tier >> 16) < 2)
+                {
+                    MessageBoxResult test = MessageBox.Show("Your graphics card may not be optimal for Dynamic Desktop. While Dynamic Desktop may run, you may notice heavily degraded perfomance. Are you sure you want to continue?", "Performance Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                    if (test == MessageBoxResult.No)
+                    {
+                        Application.Current.Shutdown();
+                    }
                 }
             }
             try
