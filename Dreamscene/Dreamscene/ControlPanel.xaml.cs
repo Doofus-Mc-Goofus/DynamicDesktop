@@ -33,6 +33,10 @@ namespace Dreamscene
             {
                 StartupCheckbox.IsChecked = true;
             }
+            if (mainWindow.HKCU_GetString(@"SOFTWARE\Dreamscene", "PauseBattery") == "true")
+            {
+                BatterySaverCheckbox.IsChecked = true;
+            }
             SystemEvents.UserPreferenceChanged += (s, ee) => MetricUpdate();
             MetricUpdate();
             firstTime = false;
@@ -93,6 +97,7 @@ namespace Dreamscene
                         MainWiw.Video.VerticalAlignment = VerticalAlignment.Stretch;
                         break;
                 }
+                MainWiw.Video.Play();
             }
             catch
             {
@@ -150,6 +155,16 @@ namespace Dreamscene
             StartupCheckbox.Checked -= StartupCheckbox_Checked;
             StartupCheckbox.Unchecked -= StartupCheckbox_Unchecked;
             GC.Collect();
+        }
+
+        private void BatterySaverCheckbox_Checked(object sender, RoutedEventArgs e)
+        {
+            MainWiw.HKCU_AddKey(@"SOFTWARE\Dreamscene", "PauseBattery", "true");
+        }
+
+        private void BatterySaverCheckbox_Unchecked(object sender, RoutedEventArgs e)
+        {
+            MainWiw.HKCU_AddKey(@"SOFTWARE\Dreamscene", "PauseBattery", "false");
         }
     }
 }

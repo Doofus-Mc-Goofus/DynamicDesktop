@@ -46,7 +46,7 @@ namespace Dreamscene
         {
             Dispatcher.UnhandledException += OnDispatcherUnhandledException;
             InitializeComponent();
-            HKCU_AddKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", "DynamicDesktop.exe", 11000);
+            HKCU_AddKey(@"SOFTWARE\Microsoft\Internet Explorer\Main\FeatureControl\FEATURE_BROWSER_EMULATION", "WallpaperPlusPlus.exe", 11000);
             string swaus = "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" -hide 1";
             if (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp") == "")
             {
@@ -54,20 +54,34 @@ namespace Dreamscene
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "Startup", "true");
                 HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
-                HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Dynamic Desktop", swaus);
+                HKCU_AddKey(@"SOFTWARE\Dreamscene", "PauseBattery", "false");
+                HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Wallpaper++", swaus);
             }
             notifyIcon1.Icon = new Icon(Application.GetResourceStream(new Uri("pack://application:,,,/ico.ico")).Stream);
-            notifyIcon1.Text = "Dynamic Desktop";
+            notifyIcon1.Text = "Wallpaper++";
             notifyIcon1.Visible = true;
             notifyIcon1.MouseClick += CreateSetupWindowFunc;
             notifyIcon1.ContextMenuStrip = new System.Windows.Forms.ContextMenuStrip();
             _ = notifyIcon1.ContextMenuStrip.Items.Add("Open Settings", null, (s, ee) => CreateSetupWindow(false));
             _ = notifyIcon1.ContextMenuStrip.Items.Add("Adjust Volume", null, SndVol);
-            _ = notifyIcon1.ContextMenuStrip.Items.Add("Exit Dynamic Desktop", null, (s, ee) => Application.Current.Shutdown());
+            _ = notifyIcon1.ContextMenuStrip.Items.Add("Check for Updates", null, UpdateWindowOpen);
+            _ = notifyIcon1.ContextMenuStrip.Items.Add("Exit Wallpaper++", null, (s, ee) => Application.Current.Shutdown());
             SystemEvents.UserPreferenceChanged += (s, ee) => Update(true);
             timer.Tick += (s, ee) => Update(false);
             timer.Interval = TimeSpan.FromSeconds(1);
             timer.Start();
+        }
+
+        private async void UpdateWindowOpen(object sender, EventArgs e)
+        {
+            process.StartInfo = new ProcessStartInfo
+            {
+                FileName = @"explorer",
+                Arguments = @"https://github.com/Doofus-Mc-Goofus/WallpaperPlusPlus"
+            };
+            _ = await Task.Run(process.Start);
+            await Task.Run(process.WaitForExit);
+            await Task.Run(process.Close);
         }
 
         private async void SndVol(object sender, EventArgs e)
@@ -194,6 +208,7 @@ namespace Dreamscene
                         try
                         {
                             Video.Source = new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"));
+                            Video.Play();
                         }
                         catch
                         {
@@ -209,6 +224,7 @@ namespace Dreamscene
                         try
                         {
                             Video.Source = new Uri(HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"));
+                            Video.Play();
                         }
                         catch
                         {
@@ -277,12 +293,12 @@ namespace Dreamscene
                 {
                     publicpanel?.Close();
                     Visibility = Visibility.Collapsed;
-                    _ = MessageBox.Show("Dynamic Desktop could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or your version of Windows is incompatible. Dynamic Desktop will now close.", "Hooking Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+                    _ = MessageBox.Show("Wallpaper++ could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or your version of Windows is incompatible. Wallpaper++ will now close.", "Hooking Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
                     Application.Current.Shutdown();
                 }
                 if ((RenderCapability.Tier >> 16) < 2)
                 {
-                    MessageBoxResult test = MessageBox.Show("Your graphics card may not be optimal for Dynamic Desktop. While Dynamic Desktop may run, you may notice heavily degraded perfomance. Are you sure you want to continue?", "Performance Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                    MessageBoxResult test = MessageBox.Show("Your graphics card may not be optimal for Wallpaper++. While Wallpaper++ may run, you may notice heavily degraded perfomance. Are you sure you want to continue?", "Performance Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
                     if (test == MessageBoxResult.No)
                     {
                         Application.Current.Shutdown();
@@ -294,6 +310,25 @@ namespace Dreamscene
                 if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "ActiveDesktop")))
                 {
                     Video.Source = null;
+                }
+                else
+                {
+                    if (bool.Parse(HKCU_GetString(@"SOFTWARE\Dreamscene", "PauseBattery")))
+                    {
+                        System.Windows.Forms.BatteryChargeStatus test = System.Windows.Forms.SystemInformation.PowerStatus.BatteryChargeStatus;
+                        if (test == System.Windows.Forms.BatteryChargeStatus.High || test == System.Windows.Forms.BatteryChargeStatus.Low || test == System.Windows.Forms.BatteryChargeStatus.Critical)
+                        {
+                            Video.Pause();
+                        }
+                        else
+                        {
+                            Video.Play();
+                        }
+                    }
+                    else
+                    {
+                        Video.Play();
+                    }
                 }
             }
             catch
@@ -401,7 +436,7 @@ namespace Dreamscene
                         NonFatalError.Content = "SaT";
                         break;
                     case "BM":
-                        NonFatalError.Content = "Welcome to Dynamic Desktop! Select a file to get started.";
+                        NonFatalError.Content = "Welcome to Wallpaper++! Select a file to get started.";
                         break;
                     default:
                         NonFatalError.Content = "Unable to locate video file, please locate it and try again.";

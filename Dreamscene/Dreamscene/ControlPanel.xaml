@@ -4,7 +4,7 @@
         xmlns:d="http://schemas.microsoft.com/expression/blend/2008"
         xmlns:mc="http://schemas.openxmlformats.org/markup-compatibility/2006"
         mc:Ignorable="d"
-        Title="Dynamic Desktop Settings" Height="400" Width="640" ResizeMode="NoResize" Closed="Window_Closed">
+        Title="Wallpaper++ Settings" Height="400" Width="640" ResizeMode="NoResize" Closed="Window_Closed">
     <Grid x:Name="Grirg">
         <Label Content="Preview:" Margin="5,0,0,0"/>
         <Rectangle x:Name="DeskBG" Width="426.67" Height="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Fill="Black"/>
@@ -19,5 +19,6 @@
             <ComboBoxItem Content="Center"/>
         </ComboBox>
         <CheckBox x:Name="StartupCheckbox" Content="Run at startup" HorizontalAlignment="Right" Margin="0,305,10,0" VerticalAlignment="Top" Checked="StartupCheckbox_Checked" Unchecked="StartupCheckbox_Unchecked"/>
+        <CheckBox x:Name="BatterySaverCheckbox" Content="Pause video when connected to battery" HorizontalAlignment="Left" Margin="10,335,0,0" VerticalAlignment="Top" Checked="BatterySaverCheckbox_Checked" Unchecked="BatterySaverCheckbox_Unchecked"/>
     </Grid>
 </Window>
