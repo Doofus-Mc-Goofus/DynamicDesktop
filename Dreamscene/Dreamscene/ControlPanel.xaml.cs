@@ -57,7 +57,7 @@ namespace Dreamscene
                     URL.Content = "None";
                     break;
                 case "aur":
-                    URL.Content = "Desktop Aurora by SaT";
+                    URL.Content = "Desktop Aurora";
                     break;
                 default:
                     URL.Content = MainWiw.HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp");
@@ -134,7 +134,7 @@ namespace Dreamscene
             if (!firstTime)
             {
                 MainWiw.HKCU_AddKey(@"SOFTWARE\Dreamscene", "Startup", "true");
-                MainWiw.HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Dynamic Desktop", "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" -hide 1");
+                MainWiw.HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Wallpaper++", "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" -hide 1");
             }
         }
 
@@ -144,7 +144,7 @@ namespace Dreamscene
             {
                 MainWiw.HKCU_AddKey(@"SOFTWARE\Dreamscene", "Startup", "false");
                 RegistryKey rk = Registry.CurrentUser.CreateSubKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run");
-                rk.DeleteValue("Dynamic Desktop");
+                rk.DeleteValue("Wallpaper++");
             }
         }
 

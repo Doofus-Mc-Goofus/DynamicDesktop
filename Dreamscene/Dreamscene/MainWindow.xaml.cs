@@ -294,18 +294,28 @@ namespace Dreamscene
             {
                 if (Height != SystemParameters.PrimaryScreenHeight || Width != SystemParameters.PrimaryScreenWidth)
                 {
-                    publicpanel?.Close();
-                    Visibility = Visibility.Collapsed;
-                    _ = MessageBox.Show("Wallpaper++ could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or your version of Windows is incompatible. Wallpaper++ will now close.", "Hooking Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
-                    Application.Current.Shutdown();
-                }
-                if ((RenderCapability.Tier >> 16) < 2)
-                {
-                    MessageBoxResult test = MessageBox.Show("Your graphics card may not be optimal for Wallpaper++. While Wallpaper++ may run, you may notice heavily degraded perfomance. Are you sure you want to continue?", "Performance Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
-                    if (test == MessageBoxResult.No)
-                    {
-                        Application.Current.Shutdown();
-                    }
+                    // Much simpler hook, but hides desktop icons, context menu, and selection box.
+                    //
+                    // try
+                    // {
+                    // IntPtr handle = new WindowInteropHelper(Application.Current.MainWindow).Handle;
+                    // IntPtr intPtr = FindWindow("Progman", null);
+                    // _ = ShowWindow(intPtr, 0);
+                    // _ = SetParent(handle, intPtr);
+                    // base.Left = 0.0;
+                    // base.Top = 0.0;
+                    // base.Height = SystemParameters.PrimaryScreenHeight;
+                    // base.Width = SystemParameters.PrimaryScreenWidth;
+                    // if (Height != SystemParameters.PrimaryScreenHeight || Width != SystemParameters.PrimaryScreenWidth)
+                    // {
+                    // CompatIssue();
+                    // }
+                    // }
+                    // catch
+                    // {
+                    // CompatIssue();
+                    // }
+                    CompatIssue();
                 }
             }
             try
@@ -340,7 +350,19 @@ namespace Dreamscene
             }
             GC.Collect();
         }
-
+        private void CompatIssue()
+        {
+            timer.Tick -= (s, ee) => Update(false);
+            SystemEvents.UserPreferenceChanged -= (s, ee) => Update(true);
+            publicpanel?.Close();
+            Visibility = Visibility.Collapsed;
+            _ = Environment.OSVersion.Version.Build >= 26100
+                ? MessageBox.Show("Wallpaper++ does not support Windows 11 24H2 or later. Wallpaper++ will now close.", "Compatibility Error", MessageBoxButton.OK, MessageBoxImage.Exclamation)
+                : Environment.OSVersion.Version.Build <= 6203
+                    ? MessageBox.Show("Wallpaper++ does not support Windows Vista as of now. Wallpaper++ will now close.", "Compatibility Error", MessageBoxButton.OK, MessageBoxImage.Exclamation)
+                    : MessageBox.Show("Wallpaper++ could not hook into explorer. This may be for a variety of reasons, such as Aero not being enabled, or your version of Windows is incompatible. Wallpaper++ will now close.", "Hooking Error", MessageBoxButton.OK, MessageBoxImage.Exclamation);
+            Application.Current.Shutdown();
+        }
         private delegate bool EnumWindowsProc(IntPtr hWnd, IntPtr lParam);
         [DllImport("user32.dll", SetLastError = true)]
         private static extern IntPtr FindWindow(string lpClassName, string lpWindowName);
@@ -403,6 +425,14 @@ namespace Dreamscene
                 settingsWindow.Close();
             }
             Update(true);
+            if ((RenderCapability.Tier >> 16) < 2)
+            {
+                MessageBoxResult test = MessageBox.Show("Your graphics card may not be optimal for Wallpaper++. While Wallpaper++ may run, you may notice heavily degraded perfomance. Are you sure you want to continue?", "Performance Warning", MessageBoxButton.YesNo, MessageBoxImage.Exclamation);
+                if (test == MessageBoxResult.No)
+                {
+                    Application.Current.Shutdown();
+                }
+            }
         }
 
         private void MediaElement_MediaEnded(object sender, RoutedEventArgs e)
@@ -435,9 +465,6 @@ namespace Dreamscene
             {
                 switch (HKCU_GetString(@"SOFTWARE\Dreamscene", "Wallp"))
                 {
-                    case "aur":
-                        NonFatalError.Content = "SaT";
-                        break;
                     case "BM":
                         NonFatalError.Content = "Welcome to Wallpaper++! Select a file to get started.";
                         break;
@@ -467,5 +494,6 @@ namespace Dreamscene
         {
             notifyIcon1.Dispose();
         }
+
     }
 }
