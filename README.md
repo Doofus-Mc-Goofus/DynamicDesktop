@@ -1,5 +1,5 @@
-# Dynamic Desktop
-Set your wallpaper to a video or html file, kinda like Windows Dreamscene and Active Desktop combined.
+# Wallpaper++
+Wallpaper++ (previously known as Dynamic Desktop and Codename: Dreamscene) lets you set your wallpaper to a video or html file, kinda like Windows Dreamscene and Active Desktop combined.
 ## Supported Files
 ✔ Pictures (For some reason)  
 ✔ Videos  
