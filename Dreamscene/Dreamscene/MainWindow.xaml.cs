@@ -23,7 +23,10 @@ namespace Dreamscene
         {
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "Wallp", "BM");
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "Fit", "10");
+            HKCU_AddKey(@"SOFTWARE\Dreamscene", "Startup", "true");
             HKCU_AddKey(@"SOFTWARE\Dreamscene", "ActiveDesktop", "false");
+            HKCU_AddKey(@"SOFTWARE\Dreamscene", "PauseBattery", "false");
+            HKCU_AddKey(@"SOFTWARE\Microsoft\Windows\CurrentVersion\Run", "Wallpaper++", "\"" + System.Reflection.Assembly.GetExecutingAssembly().Location + "\" -hide 1");
             e.Handled = true;
             try
             {

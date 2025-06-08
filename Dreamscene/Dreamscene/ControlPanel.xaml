@@ -10,7 +10,7 @@
         <Rectangle x:Name="DeskBG" Width="426.67" Height="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Fill="Black"/>
         <Label Width="426.67" Height="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0" Foreground="White" Content="No preview available" HorizontalContentAlignment="Center" VerticalContentAlignment="Center"/>
         <Image x:Name="preview" Width="426.67" Height="240" HorizontalAlignment="Left" VerticalAlignment="Top" Margin="10,30,0,0"/>
-        <Label x:Name="URL" Content="C:\" Margin="5,272,0,0"/>
+        <Label x:Name="URL" Content="Loading..." Margin="5,272,0,0"/>
         <Button x:Name="bubton" HorizontalAlignment="Right" VerticalAlignment="Top" Content="Browse" Padding="7,0,8,1" Margin="30,275,10,0" Click="Button_Click"/>
         <ComboBox x:Name="FitDropdown" HorizontalAlignment="Left" Margin="10,300,0,0" VerticalAlignment="Top" Width="130" SelectionChanged="FitDropdown_SelectionChanged">
             <ComboBoxItem Content="Fill"/>
@@ -19,6 +19,6 @@
             <ComboBoxItem Content="Center"/>
         </ComboBox>
         <CheckBox x:Name="StartupCheckbox" Content="Run at startup" HorizontalAlignment="Right" Margin="0,305,10,0" VerticalAlignment="Top" Checked="StartupCheckbox_Checked" Unchecked="StartupCheckbox_Unchecked"/>
-        <CheckBox x:Name="BatterySaverCheckbox" Content="Pause video when connected to battery" HorizontalAlignment="Left" Margin="10,335,0,0" VerticalAlignment="Top" Checked="BatterySaverCheckbox_Checked" Unchecked="BatterySaverCheckbox_Unchecked"/>
+        <CheckBox x:Name="BatterySaverCheckbox" Content="Pause video on battery power" HorizontalAlignment="Left" Margin="10,335,0,0" VerticalAlignment="Top" Checked="BatterySaverCheckbox_Checked" Unchecked="BatterySaverCheckbox_Unchecked"/>
     </Grid>
 </Window>
